@@ -1,0 +1,8 @@
+<h2>Welcome {{ request.user.username }}</h2>
+{% if profile.resume %}
+    <p>Your resume:</p>
+    <a href="{{ profile.resume.url }}" target="_blank">View Resume</a>
+{% else %}
+    <p>No resume uploaded.</p>
+{% endif %}
+<a href="{% url 'base:logout' %}">Logout</a>

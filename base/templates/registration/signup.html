@@ -3,12 +3,15 @@
 <div class="shadow-wrap">
  <div class="form-wrap">
   <h3>Signup </h3>
-<form method="POST">
- {% csrf_token %}
- {{form}}
- <button type="submit">Submit</button>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
 </form>
+
+
 <a class="signup-link" href="{% url "base:login" %}">Login</a>
 </div>
 </div>
 {% endblock content %}a
+

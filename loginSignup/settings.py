@@ -11,9 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os 
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+print(BASE_DIR)
+print("---------------------")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = 'base:login'
+# In settings.py
+LOGIN_REDIRECT_URL = 'base:profile'  # or 'profile' if no namespace
+
+LOGOUT_REDIRECT_URL = 'base:login'
+
+
 
 
 # Quick-start development settings - unsuitable for production
