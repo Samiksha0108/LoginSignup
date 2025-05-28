@@ -1,0 +1,45 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Matcher</title>
+    <link rel="stylesheet" href="{% static 'job_match.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>Match Job to All Uploaded Resumes</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Find Best Candidates</button>
+        </form>
+
+        {% if results %}
+            <div class="results">
+                <h3>Extracted Keywords:</h3>
+                <p>{{ job_keywords|join:", " }}</p>
+                <p>----</p>
+            </div>
+        {% endif %}
+        
+
+        {% if results %}
+            <div class="results">
+                <h3>Match Results:</h3>
+                <ul>
+                    {% for result in results %}
+                        <li>
+                            <strong>{{ result.user }}</strong>: {{ result.score }}%
+                            <br><em>Matched Keywords:</em> {{ result.matched_keywords|join:", " }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

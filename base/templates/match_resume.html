@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Match Resume to Job Description</title></head>
+<body>
+    <h2>Job Matching Tool</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Check Match</button>
+    </form>
+
+    {% if result %}
+        {% if result.error %}
+            <p style="color:red">{{ result.error }}</p>
+        {% else %}
+            <h3>Match Score: {{ result.score }}%</h3>
+            <h4>Matched Keywords:</h4>
+            <ul>
+                {% for kw in result.matched %}
+                    <li>{{ kw }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+</body>
+</html>

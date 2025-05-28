@@ -8,3 +8,11 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2', 'resume']
+class ResumeMatchForm(forms.Form):
+    job_description = forms.CharField(widget=forms.Textarea, label="Paste Job Description")
+
+
+# forms.py
+class JobToResumesForm(forms.Form):
+    job_description = forms.CharField(widget=forms.Textarea, label="Paste Job Description")
+

@@ -1,0 +1,60 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Mulish', sans-serif;
+    transition: 0.3s ease-in-out;
+}
+
+/* Page Layout */
+body {
+    background-color: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card Container */
+.profile-container {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    width: 420px;
+    text-align: center;
+}
+
+/* Headings */
+.profile-container h2 {
+    margin-bottom: 20px;
+    color: #10182F;
+    font-size: 24px;
+}
+
+/* Paragraphs */
+.profile-container p {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* Buttons & Links */
+.profile-container a {
+    display: block;
+    padding: 12px 0;
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background-color: #0b3bca;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.profile-container a:hover {
+    background-color: white;
+    color: #10182F;
+    border-color: #10182F;
+}
