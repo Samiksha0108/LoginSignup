@@ -13,7 +13,7 @@
         {% if result.error %}
             <p style="color:red">{{ result.error }}</p>
         {% else %}
-            <h3>Match Score: {{ result.score }}%</h3>
+            <h3>Match Score: {{ result.score }}</h3>
             <h4>Matched Keywords:</h4>
             <ul>
                 {% for kw in result.matched %}
