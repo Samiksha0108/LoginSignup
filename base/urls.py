@@ -2,6 +2,8 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 from .views import logout_view,match_resume_view,job_match_all_resumes_view
+app_name = 'base'
+
 
 urlpatterns = [
     path('', views.profile, name='profile'),
@@ -13,5 +15,14 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('match-resume/', match_resume_view, name='match_resume'),
     path('match-job-to-resumes/', job_match_all_resumes_view, name='match_job_all'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('add-employee/', views.add_employee, name='add_employee'),
+    path('post-job/', views.post_job, name='post_job'),
+    path('my-jobs/', views.user_job_postings, name='my_jobs'),
+    path('my-employees/', views.view_employees, name='view_employees'),
+
+
 
 ]
+
+

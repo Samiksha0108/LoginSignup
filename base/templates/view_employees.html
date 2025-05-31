@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Employees</h2>
+    {% if employees %}
+        <ul class="list-group">
+            {% for emp in employees %}
+                <li class="list-group-item mb-2">
+                    <strong>{{ emp.first_name }} {{emp.last_name}}</strong> — {{ emp.role }}<br>
+                    ID: {{ emp.employee_id }}<br>
+                    GOVT_id: {{ emp.govt_id_number }}, SSN: {{ emp.ssn_number }}<br>
+                    Salary: ₹{{ emp.salary_amount}} / {{emp.salary_type}}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">You haven't added any employees yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

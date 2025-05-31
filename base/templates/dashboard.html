@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Company Dashboard</h2>
+  <a href="{% url 'base:add_employee' %}" class="btn btn-primary mt-3">Add Employee</a>
+  <a href="{% url 'base:post_job' %}" class="btn btn-success mt-3">Post Job Role</a>
+</div>
+{% endblock %}

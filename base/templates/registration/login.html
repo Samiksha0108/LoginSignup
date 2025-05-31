@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="shadow-wrap">
- <div class="form-wrap">
-  <h3>Login </h3>
-<form method="POST">
- {% csrf_token %}
- {{form}}
- <button type="submit">Submit</button>
-</form>
-<a class="signup-link" href="{% url 'base:signup' %}">Signup</a>
-</div>
-</div>
-{% endblock content %}a
+<body class="auth-body"> <!-- 👈 added class here -->
+  <div class="shadow-wrap">
+    <div class="form-wrap">
+      <h3>Login</h3>
+      <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Submit</button>
+      </form>
+      <a class="signup-link" href="{% url 'base:signup' %}">Signup</a>
+    </div>
+  </div>
+</body>
+{% endblock content %}

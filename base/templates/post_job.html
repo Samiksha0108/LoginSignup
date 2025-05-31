@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    
+    <h2>Post New Job Role</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Form Errors:</strong>
+            <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <div>{{ form.title.label_tag }} {{ form.title }}</div><br>
+        <div>{{ form.description.label_tag }} {{ form.description }}</div><br>
+        <button type="submit" name="preview_keywords" class="btn btn-secondary">
+            🔍 Preview Keywords
+        </button>
+
+        <br><br>
+        <div>{{ form.salary_min.label_tag }} {{ form.salary_min }}</div>
+        <div>{{ form.salary_max.label_tag }} {{ form.salary_max }}</div>
+        <div>{{ form.employment_type.label_tag }} {{ form.employment_type }}</div>
+        <div>{{ form.location.label_tag }} {{ form.location }}</div>
+        <div>{{ form.experience_level.label_tag }} {{ form.experience_level }}</div>
+
+        {% if form.fields.selected_keywords.choices %}
+            <hr>
+            <h5>Select Mandatory Keywords:</h5>
+            {{ form.selected_keywords }}
+        {% else %}
+            <hr>
+            <p class="text-muted">To select mandatory keywords, enter a job description and click "Preview Keywords".</p>
+        {% endif %}
+
+        
+
+        <br>
+        <button type="submit" class="btn btn-success">
+            ✅ Submit Job Posting
+        </button>
+    </form>
+    
+</div>
+{% endblock %}

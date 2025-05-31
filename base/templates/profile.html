@@ -1,27 +1,67 @@
-
-
- {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
     <link rel="stylesheet" href="{% static 'profile.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <a href="{% url 'base:my_jobs' %}">📄 View My Job Postings</a>
+
+    
+    
 </head>
 <body>
-    <div class="profile-container">
-        <h2>Welcome {{ request.user.username }}</h2>
+<div class="container profile-container">
+    <div class="row">
+        <!-- Left Panel -->
+        <div class="col-md-4 border-end profile-sidebar">
+            <h3>Welcome {{ request.user.username }}</h3>
 
-        {% if profile.resume %}
-            <p>Your resume:</p>
-            <a href="{{ profile.resume.url }}" target="_blank">📄 View Resume</a>
-        {% else %}
-            <p>No resume uploaded.</p>
-        {% endif %}
+            {% if profile.resume %}
+                <p>Your resume:</p>
+                <a href="{{ profile.resume.url }}" target="_blank">📄 View Resume</a>
+            {% else %}
+                <p>No resume uploaded.</p>
+            {% endif %}
 
-        <a href="{% url 'base:match_job_all' %}">🧠 Match Job to All Resumes</a>
-        <a href="{% url 'base:logout' %}">🚪 Logout</a>
+            <hr>
+            <a class="d-block mb-2" href="{% url 'base:match_job_all' %}">🧠 Match Job to All Resumes</a>
+            <a class="d-block mb-2" href="{% url 'base:add_employee' %}">👨‍💼 Add Employee</a>
+            <a class="d-block mb-2" href="{% url 'base:post_job' %}">📢 Post Job Role</a>
+            <a class="d-block mt-3 text-danger" href="{% url 'base:logout' %}">🚪 Logout</a>
+            <a class="d-block mb-2" href="{% url 'base:view_employees' %}">👥 View My Employees</a>
+
+        </div>
+
+        <!-- Right Panel -->
+        <!-- Right Panel -->
+        <!-- Right Panel -->
+        <div class="col-md-8 p-4 job-listing">
+
+            
+            <h4>Your Job Postings</h4>
+            
+            {% if job_posts %}
+                <ul class="list-group">
+                    {% for job in job_posts %}
+                        <li class="list-group-item mb-3">
+                            <strong>{{ job.title }}</strong><br>
+                            <small>{{ job.location }} | {{ job.experience_level }} | {{ job.employment_type }}</small><br>
+                            <small>💰 {{ job.salary_min }} - {{ job.salary_max }}</small><br>
+                            <small>🧩 Keywords: {{ job.keywords }}</small><br>
+                            <p class="mt-2"><em>{{ job.description|truncatechars:100 }}</em></p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">You haven’t posted any jobs yet.</p>
+            {% endif %}
+            
+        </div>
+
     </div>
+</div>
 </body>
 </html>
+

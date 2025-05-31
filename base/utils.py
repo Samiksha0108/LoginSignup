@@ -235,7 +235,7 @@ def extract_keywords(text):
 
     for token in doc:
         if (
-            token.is_alpha and                    # ignore numbers/symbols
+                                
             token.lemma_ not in stop_words and    # remove stopwords
             token.lemma_ not in punctuation and
             len(token.lemma_) > 2 and             # filter very short words
@@ -250,5 +250,5 @@ def match_resume_to_job(resume_text, job_desc_text):
     resume_kw = extract_keywords(resume_text)
     jd_kw = extract_keywords(job_desc_text)
     matched = resume_kw & jd_kw
-    score = len(matched) / len(jd_kw) * 100 if jd_kw else 0
+    score = len(matched)
     return round(score, 2), matched
