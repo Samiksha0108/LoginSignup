@@ -20,6 +20,15 @@ urlpatterns = [
     path('post-job/', views.post_job, name='post_job'),
     path('my-jobs/', views.user_job_postings, name='my_jobs'),
     path('my-employees/', views.view_employees, name='view_employees'),
+    path('employee/info/', views.employee_info, name='employee_info'),
+    path('submit-timesheet/', views.submit_timesheet, name='submit_timesheet'),
+    path('view-timesheets/', views.view_timesheets, name='view_timesheets'),
+    path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+    path('employee/timesheets/', views.view_employee_timesheets, name='view_employee_timesheets'),
+    path('timesheet/approve/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+    path('timesheet/reject/<int:timesheet_id>/', views.reject_timesheet, name='reject_timesheet'),
+
+
 
 
 

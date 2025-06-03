@@ -23,7 +23,7 @@ from .models import Employee, JobRole
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
-        exclude = ['user']
+        exclude = ['user','linked_user']  # Exclude user and linked_user fields
 
 # class JobRoleForm(forms.ModelForm):
 #     class Meta:
@@ -33,18 +33,37 @@ from django import forms
 from .models import JobRole
 from .utils import extract_keywords
 
+from django import forms
+
 class JobRoleForm(forms.ModelForm):
     selected_keywords = forms.MultipleChoiceField(
         required=False,
         widget=forms.CheckboxSelectMultiple,
-        choices=[],
-        label="Mandatory Keywords"
+        label="Select Extracted Keywords"
+    )
+    manual_keywords = forms.CharField(
+        required=False,
+        label="Add Your Own Keywords (comma-separated)",
+        widget=forms.TextInput(attrs={'placeholder': 'e.g. Leadership, Communication'})
     )
 
     class Meta:
         model = JobRole
-        exclude = ['user', 'keywords']
+        fields = ['title', 'description', 'salary_min', 'salary_max', 'employment_type', 'location', 'experience_level']
+
 
     
 
 
+# forms.py
+from django import forms
+from .models import Timesheet
+
+class TimesheetForm(forms.ModelForm):
+    class Meta:
+        model = Timesheet
+        fields = ['start_time', 'end_time']
+        widgets = {
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }

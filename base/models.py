@@ -32,8 +32,12 @@ EXPERIENCE_LEVEL_CHOICES = [
     ('senior', 'Senior'),
 ]
 
+from django.contrib.auth.models import User
+
 class Employee(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Company who added
+    linked_user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='employee_profile')  # Candidate user
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     salary_type = models.CharField(max_length=10, choices=SALARY_TYPE_CHOICES)
@@ -47,6 +51,7 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.role}"
+
 
 # class JobRole(models.Model):
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Company who posted
@@ -84,3 +89,22 @@ class JobRole(models.Model):
 
     def get_keyword_list(self):
         return self.keywords.split(",") if self.keywords else []
+
+
+# models.py
+from django.db import models
+from django.contrib.auth.models import User
+from datetime import timedelta
+
+class Timesheet(models.Model):
+    employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    approved = models.BooleanField(default=False)
+    rejected = models.BooleanField(default=False)
+
+    def hours_worked(self):
+        return round((self.end_time - self.start_time).total_seconds() / 3600, 2)
+
+    def __str__(self):
+        return f"{self.employee} | {self.start_time} to {self.end_time} | Approved: {self.approved}"

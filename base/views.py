@@ -9,6 +9,7 @@ from .forms import JobToResumesForm
 
 
 
+
 @login_required
 def home(request):
  return render(request, "home.html", {})
@@ -30,19 +31,37 @@ from .models import JobRole
 #         'profile': profile,
 #         'job_roles': job_roles
 #     })
-from .models import JobRole
+# from .models import JobRole
+
+# @login_required
+# def profile(request):
+#     profile = request.user.profile
+#     job_posts = JobRole.objects.filter(user=request.user).order_by('-id')
+#     return render(request, 'profile.html', {
+#         'profile': profile,
+#         'job_posts': job_posts
+#     })
+
+from .models import JobRole, Employee
 
 @login_required
 def profile(request):
     profile = request.user.profile
     job_posts = JobRole.objects.filter(user=request.user).order_by('-id')
+    employees = Employee.objects.filter(user=request.user)
+
     return render(request, 'profile.html', {
         'profile': profile,
-        'job_posts': job_posts
+        'job_posts': job_posts,
+        'employees': employees,
     })
 
 
 
+# views.py
+
+from django.contrib.auth import login
+from .models import Employee
 
 def authView(request):
     if request.method == "POST":
@@ -51,16 +70,55 @@ def authView(request):
             user = form.save()
             resume = form.cleaned_data.get('resume')
 
-            # Either get existing profile or create it
+            # Create profile
             profile, created = Profile.objects.get_or_create(user=user)
             if resume:
                 profile.resume = resume
                 profile.save()
 
+            # 🔗 Try to match to any pre-added Employee by email
+            employee_qs = Employee.objects.filter(email=user.username, linked_user__isnull=True)
+            if employee_qs.exists():
+                employee = employee_qs.first()
+                employee.linked_user = user
+                employee.save()
+                print(f"Linked employee {employee} to signed-up user {user}")
+
             return redirect('base:login')
     else:
         form = CustomUserCreationForm()
     return render(request, "registration/signup.html", {"form": form})
+
+
+# def authView(request):
+#     if request.method == "POST":
+#         form = CustomUserCreationForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             user = form.save()
+#             resume = form.cleaned_data.get('resume')
+
+#             # Either get existing profile or create it
+#             profile, created = Profile.objects.get_or_create(user=user)
+#             if resume:
+#                 profile.resume = resume
+#                 profile.save()
+
+#             # After user = form.save()
+#             from .models import Employee
+#             try:
+#                 employee = Employee.objects.get(email=user.email)
+#                 employee.linked_user = user
+#                 employee.save()
+#             except Employee.DoesNotExist:
+#                 pass
+
+
+#             return redirect('base:login')
+#     else:
+#         form = CustomUserCreationForm()
+#     return render(request, "registration/signup.html", {"form": form})
+
+
 from django.contrib.auth import logout
 from django.shortcuts import redirect
 
@@ -239,12 +297,23 @@ def post_job(request):
             if form.is_valid():
                 job = form.save(commit=False)
                 job.user = request.user
+
+                # Get selected checkbox keywords
                 keywords = form.cleaned_data.get('selected_keywords', [])
                 if isinstance(keywords, str):
                     keywords = [keywords]
-                job.keywords = ",".join(keywords)
+
+                # Get manually entered keywords
+                manual_kw = form.cleaned_data.get('manual_keywords', '')
+                manual_kw_list = [kw.strip() for kw in manual_kw.split(',') if kw.strip()]
+
+                # Combine both
+                all_keywords = keywords + manual_kw_list
+
+                job.keywords = ",".join(all_keywords)
                 job.save()
-                return redirect('base:dashboard')  # or 'base:dashboard'
+                return redirect('base:dashboard')
+
             else:
                 print("Form errors:", form.errors)  # Debug
     else:
@@ -263,3 +332,105 @@ def user_job_postings(request):
 def view_employees(request):
     employees = Employee.objects.filter(user=request.user)
     return render(request, 'view_employees.html', {'employees': employees})
+
+@login_required
+def employee_info(request):
+    try:
+        emp = request.user.employee_profile  # via related_name
+        print(emp)
+        print("---")
+    except Employee.DoesNotExist:
+        print(" [][][][]")
+        emp = None
+
+    return render(request, 'employee_info.html', {'employee': emp})
+
+
+# views.py
+from .models import Timesheet, Employee
+from .forms import TimesheetForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def submit_timesheet(request):
+    if request.method == 'POST':
+        form = TimesheetForm(request.POST)
+        if form.is_valid():
+            timesheet = form.save(commit=False)
+            try:
+                timesheet.employee = Employee.objects.get(linked_user=request.user)
+                timesheet.save()
+                return redirect('base:view_timesheets')
+            except Employee.DoesNotExist:
+                return render(request, 'error.html', {'message': "You're not a registered employee."})
+    else:
+        form = TimesheetForm()
+    return render(request, 'submit_timesheet.html', {'form': form})
+
+
+from django.utils import timezone
+from datetime import timedelta
+from django.db import models  # ✅ Add this if not already present
+
+
+@login_required
+def view_timesheets(request):
+    if Employee.objects.filter(user=request.user).exists():
+        # Company user: show only pending timesheets of employees they added
+        added_employees = Employee.objects.filter(user=request.user)
+        timesheets = Timesheet.objects.filter(
+            employee__in=added_employees,
+            approved=False,
+            rejected=False
+        ).order_by('-start_time')
+        is_company = True
+    else:
+        # Employee user: show all their timesheets (approved, rejected, pending)
+        try:
+            employee = Employee.objects.get(linked_user=request.user)
+            timesheets = Timesheet.objects.filter(employee=employee).order_by('-start_time')
+            is_company = False
+        except Employee.DoesNotExist:
+            timesheets = []
+            is_company = False
+
+    return render(request, 'view_timesheets.html', {
+        'timesheets': timesheets,
+        'is_company': is_company
+    })
+
+
+
+@login_required
+def approve_timesheet(request, timesheet_id):
+    timesheet = Timesheet.objects.get(id=timesheet_id)
+    if timesheet.employee.user == request.user:  # Only company who added the employee
+        timesheet.approved = True
+        timesheet.save()
+    return redirect('base:view_timesheets')
+
+@login_required
+def reject_timesheet(request, timesheet_id):
+    timesheet = Timesheet.objects.get(id=timesheet_id)
+    if timesheet.employee.user == request.user:
+        timesheet.rejected = True
+        timesheet.save()
+    return redirect('base:view_timesheets')
+
+
+@login_required
+def view_employee_timesheets(request):
+    try:
+        employee = Employee.objects.get(linked_user=request.user)
+        approved_timesheets = Timesheet.objects.filter(employee=employee, approved=True)
+        pending_timesheets = Timesheet.objects.filter(employee=employee, approved=False, rejected=False)
+        rejected_timesheets = Timesheet.objects.filter(employee=employee, approved=False, rejected=True)
+    except Employee.DoesNotExist:
+        approved_timesheets = []
+        pending_timesheets = []
+
+    return render(request, 'view_employee_timesheets.html', {
+        'timesheets': approved_timesheets,
+        'timesheets1': pending_timesheets,
+        'timesheets2': rejected_timesheets
+    })

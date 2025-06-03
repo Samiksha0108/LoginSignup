@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">My Approved Timesheets</h2>
+
+    {% if timesheets or timesheets1 or timesheets2 %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Hours Worked</th>
+                    <th>Approval Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ts in timesheets %}
+                    <tr>
+                        <td>{{ ts.start_time }}</td>
+                        <td>{{ ts.end_time }}</td>
+                        <td>{{ ts.hours_worked }}</td>
+                        <td class="text-success">✅ Approved</td>
+                    </tr>
+                {% endfor %}
+                {% for ts in timesheets1 %}
+                    <tr>
+                        <td>{{ ts.start_time }}</td>
+                        <td>{{ ts.end_time }}</td>
+                        <td>{{ ts.hours_worked }}</td>
+                        <td class="text-success">✅ Pending</td>
+                    </tr>
+                {% endfor %}
+                {% for ts in timesheets2 %}
+                    <tr>
+                        <td>{{ ts.start_time }}</td>
+                        <td>{{ ts.end_time }}</td>
+                        <td>{{ ts.hours_worked }}</td>
+                        <td class="text-success">✅ Rejected</td>
+                    </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+    {% else %}
+        <p class="text-muted">You don’t have any approved timesheets yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
